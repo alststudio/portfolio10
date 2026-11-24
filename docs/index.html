@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HINA — Lemari Kecil</title>
+<meta name="description" content="HINA lemari kecil: rel interaktif berisi pakaian anak yang lembut.">
+<link rel="icon" href="data:,">
+<script>
+  if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("pre");
+  }
+  setTimeout(function () { document.documentElement.classList.remove("pre"); }, 4000);
+</script>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+/* ============ HERO HINA (inline, mandiri) ============ */
+@font-face {
+  font-family: "Noto Sans";
+  src: url("assets/fonts/noto-sans-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root { --ns: 1; }
+.hero-section { position: relative; height: 100svh; min-height: 640px; overflow: hidden; }
+.hero-wall {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(70% 80% ellipse at 80% 40%, #F1EBEF, rgba(241,235,239,0) 70%),
+    linear-gradient(90deg, #DED7DD 0%, #E6E0E5 30%, #ECE6EB 60%, #EFE9ED 100%);
+  background-color: #ECE6EB;
+}
+.hero-stage { position: absolute; inset: 0; z-index: 1; }
+.hero-frame {
+  position: absolute; left: 50%; top: 50%; width: 1440px; height: 900px;
+  transform-origin: top left;
+}
+.rail-svg { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; z-index: 1; transition: clip-path .7s cubic-bezier(.65,0,.25,1); }
+body.detail .rail-svg { clip-path: inset(0 46% 0 0); }
+.floor-shadow {
+  position: absolute; left: 52px; width: 600px; height: 60px; z-index: 2;
+  background: radial-gradient(closest-side, rgba(70,60,90,.14), rgba(70,60,90,0));
+  border-radius: 50%;
+}
+.garment {
+  position: absolute; left: 0; top: 0; background-repeat: no-repeat;
+  transition: transform .55s cubic-bezier(.2,.75,.2,1), opacity .35s ease, filter .55s ease;
+  pointer-events: none; will-change: transform;
+}
+.garment.notrans { transition: none !important; }
+.hero-frame.slow .garment { transition: transform .7s cubic-bezier(.65,0,.25,1), opacity .55s ease, filter .55s ease; }
+
+/* Navigasi hero (menempel di tepi viewport, di dalam section hero) */
+.hero-nav {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 320;
+  height: calc(42px * var(--ns));
+  font-size: calc(10.5px * var(--ns)); letter-spacing: .19em; color: #32333F;
+  text-transform: uppercase;
+}
+.hero-wordmark {
+  position: absolute; left: calc(57px * var(--ns)); top: calc(9px * var(--ns));
+  font-size: calc(24px * var(--ns)); font-weight: 300; letter-spacing: .56em; line-height: 1;
+  text-decoration: none; color: #32333F;
+}
+.hero-nav-center {
+  position: absolute; left: 50%; top: calc(14px * var(--ns)); transform: translateX(-50%);
+  display: flex; gap: calc(35px * var(--ns)); white-space: nowrap;
+}
+.hero-nav-center a { text-decoration: none; color: #32333F; position: relative; }
+.hero-nav-center .active::after {
+  content: ""; position: absolute; left: 0; right: .2em; bottom: -3px; height: 1px; background: #32333F;
+}
+.hero-nav-center span { color: #32333F; }
+.hero-nav-right {
+  position: absolute; right: calc(54px * var(--ns)); top: calc(14px * var(--ns));
+  display: flex; align-items: center;
+}
+.hero-burger { display: inline-block; width: calc(25px * var(--ns)); margin-left: calc(21px * var(--ns)); }
+.hero-burger i { display: block; height: 1px; background: #32333F; margin-bottom: calc(5px * var(--ns)); }
+.hero-burger i:last-child { margin-bottom: 0; }
+.hero-menu-label { margin-left: calc(34px * var(--ns)); }
+
+/* Lapisan UI di dalam frame */
+.hero-ui { position: absolute; inset: 0; z-index: 300; pointer-events: none; }
+.hero-ui > * { pointer-events: none; }
+.hero-ui button, .hero-ui a { pointer-events: auto; }
+.info-col {
+  position: absolute; left: 1118px; top: 198px; width: 310px; color: #32333F;
+  transition: transform .75s cubic-bezier(.65,0,.2,1);
+}
+body.detail .info-col { transform: translateX(-328px); }
+.info-counter { font-size: 11px; letter-spacing: .18em; color: #6A6B80; height: 18px; }
+.info-title {
+  margin-top: 28px; font-size: 31px; font-weight: 300; letter-spacing: .14em;
+  line-height: 35px; min-height: 70px; text-transform: uppercase;
+}
+.info-title span { display: block; white-space: nowrap; }
+.info-rule { margin-top: 36px; width: 20px; height: 1px; background: rgba(106,107,128,.7); }
+.info-desc { margin-top: 24px; font-size: 13px; letter-spacing: .088em; line-height: 24px; color: #6A6B80; width: 300px; }
+.info-desc span { display: block; }
+.info-specs { margin-top: 54px; font-size: 10px; letter-spacing: .16em; line-height: 27px; text-transform: uppercase; }
+.info-specs .spec-row { display: flex; white-space: nowrap; }
+.info-specs .spec-label { width: 117px; flex: none; color: #32333F; }
+.info-specs .spec-value { color: #7173A6; letter-spacing: .14em; }
+.detail-btn {
+  margin-top: 50px; display: inline-flex; align-items: center; padding-bottom: 7px;
+  border-bottom: 1px solid #32333F; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+}
+.detail-btn svg { margin-left: 14px; }
+.swap { display: inline-block; transition: opacity .22s ease, transform .32s cubic-bezier(.2,.75,.2,1); }
+.swap-out { opacity: 0; transform: translateY(5px); }
+.spec-row .swap { display: inline-block; }
+.pager {
+  position: absolute; left: 1118px; top: 752px; width: 270px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: transform .75s cubic-bezier(.65,0,.2,1), width .75s cubic-bezier(.65,0,.2,1);
+}
+body.detail .pager { transform: translateX(-328px); width: 596px; }
+.pager button { width: 38px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+.pager .pager-count { font-size: 11px; letter-spacing: .18em; color: #6A6B80; }
+.left-index { position: absolute; left: 40px; top: 250px; font-size: 10px; letter-spacing: .18em; color: #6A6B80; }
+.left-index .idx-track { width: 1px; height: 77px; background: rgba(50,51,63,.18); margin: 12px 0 19px; position: relative; }
+.left-index .idx-fill { position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: #32333F; transform-origin: top; transition: transform .55s cubic-bezier(.2,.75,.2,1); }
+.hero-footer { position: absolute; left: 53px; top: 866px; font-size: 10px; letter-spacing: .225em; color: #6A6B80; text-transform: uppercase; }
+.hero-hint {
+  position: absolute; left: 723px; top: 866px; display: flex; align-items: center;
+  font-size: 9.2px; letter-spacing: .2em; color: #6A6B80; text-transform: uppercase; white-space: nowrap;
+}
+.hero-hint svg { margin: 0 14px; flex: none; }
+
+/* Panel detail */
+.detail-panel {
+  position: absolute; left: 1098px; top: 118px; width: 292px; height: 700px; z-index: 310;
+  opacity: 0; transform: translateX(46px); pointer-events: none;
+  transition: opacity .45s ease, transform .7s cubic-bezier(.2,.75,.2,1);
+}
+body.detail .detail-panel {
+  opacity: 1; transform: translateX(0); pointer-events: auto;
+  transition: opacity .45s ease .32s, transform .7s cubic-bezier(.2,.75,.2,1) .32s;
+}
+.panel-close {
+  position: absolute; right: 0; top: 0; display: inline-flex; align-items: center; gap: 12px;
+  font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: #32333F;
+}
+.panel-meta {
+  position: absolute; left: 0; top: 52px; width: 270px; display: flex; justify-content: space-between;
+  font-size: 9.5px; letter-spacing: .2em; color: #6A6B80; text-transform: uppercase;
+}
+.panel-tabs { position: absolute; left: 0; top: 80px; width: 270px; display: flex; }
+.panel-tabs button {
+  flex: 1; text-align: left; padding-bottom: 8px; font-size: 8.5px; letter-spacing: .16em;
+  color: #6A6B80; text-transform: uppercase; border-bottom: 1px solid rgba(50,51,63,.14); position: relative;
+}
+.panel-tabs button.active { color: #32333F; }
+.panel-tabs button.active::after { content: ""; position: absolute; left: 0; right: 14px; bottom: -1px; height: 1px; background: #32333F; }
+.panel-box { position: absolute; left: 0; top: 110px; width: 270px; height: 470px; background: #F0EAF0; overflow: hidden; }
+.panel-layer { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease; }
+.panel-layer.active { opacity: 1; }
+.panel-crop { position: absolute; background-repeat: no-repeat; }
+.panel-layer.active .panel-crop { animation: panelSettle .9s cubic-bezier(.2,.75,.2,1); }
+@keyframes panelSettle { from { transform: scale(1.03); } to { transform: scale(1); } }
+.panel-caption { position: absolute; left: 0; top: 596px; width: 270px; font-size: 11px; letter-spacing: .06em; line-height: 20px; color: #6A6B80; }
+.panel-track { position: absolute; right: 0; top: 80px; width: 1px; height: 520px; background: rgba(50,51,63,.12); }
+.panel-thumb { position: absolute; left: -1px; width: 3px; height: 120px; border-radius: 2px; background: rgba(50,51,63,.45); transition: top .5s cubic-bezier(.2,.75,.2,1); }
+
+/* Keadaan awal animasi pembuka (kelas pre pada html) */
+html.pre .garment, html.pre .rail-svg, html.pre .hero-nav, html.pre .left-index,
+html.pre .hero-footer, html.pre .hero-hint, html.pre .pager, html.pre .info-rule,
+html.pre .detail-btn { opacity: 0; }
+.reveal-mask { overflow: hidden; display: block; }
+.reveal-line { display: block; }
+html.pre .reveal-line { transform: translateY(105%); }
+
+/* Di bawah hero */
+.below-stage { display: none; }
+
+/* ---------- Telepon (<= 820px) ---------- */
+@media (max-width: 820px) {
+  .hero-section { height: auto; min-height: 0; overflow: visible; }
+  .hero-wall { position: absolute; }
+  .hero-stage { position: relative; inset: auto; height: 64vh; min-height: 430px; overflow: hidden; }
+  .hero-frame { left: 0; top: 50%; }
+  .hero-nav { position: absolute; height: 52px; font-size: 10.5px; }
+  .hero-wordmark { left: 18px; top: 16px; font-size: 19px; letter-spacing: .5em; }
+  .hero-nav-center, .hero-search-label { display: none; }
+  .hero-nav-right { right: 18px; top: 20px; }
+  .hero-menu-label { margin-left: 0; }
+  .hero-burger { width: 25px; margin-left: 21px; }
+  .hero-burger i { margin-bottom: 5px; }
+  .left-index, .hero-footer, .hero-hint { display: none; }
+  .below-stage { display: block; padding: 8px 22px 40px; background: #ECE6EB; }
+  .below-stage .info-col, .below-stage .pager, .below-stage .detail-panel {
+    position: static; width: auto; height: auto; transform: none; opacity: 1; pointer-events: auto;
+  }
+  .below-stage .info-title { font-size: 26px; line-height: 30px; min-height: 0; margin-top: 14px; }
+  .below-stage .info-rule { margin-top: 18px; }
+  .below-stage .info-desc { margin-top: 18px; width: auto; }
+  .below-stage .info-specs { margin-top: 24px; }
+  .below-stage .detail-btn { margin-top: 26px; }
+  .below-stage .pager { margin-top: 34px; width: auto; }
+  body.detail .below-stage .pager { width: auto; transform: none; }
+  .below-stage .detail-panel { display: none; margin-top: 34px; }
+  body.detail .below-stage .detail-panel { display: block; }
+  .below-stage .panel-close, .below-stage .panel-meta, .below-stage .panel-tabs,
+  .below-stage .panel-box, .below-stage .panel-caption { position: static; width: auto; }
+  .below-stage .panel-close { display: flex; justify-content: flex-end; margin-bottom: 18px; }
+  .below-stage .panel-meta { margin-bottom: 12px; }
+  .below-stage .panel-tabs { margin-bottom: 14px; }
+  .below-stage .panel-box { aspect-ratio: 4 / 5; height: auto; }
+  .below-stage .panel-caption { margin-top: 14px; }
+  .below-stage .panel-track { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-frame.slow .garment, .garment { transition: none !important; }
+  .panel-layer.active .panel-crop { animation: none; }
+}
+</style>
+</head>
+<body data-page="beranda">
+<header class="site-header" id="siteHeader"></header>
+
+<section class="hero-section" id="heroSection">
+  <div class="hero-wall"></div>
+  <div class="hero-stage" id="heroStage">
+    <div class="hero-frame" id="heroFrame">
+      <svg class="rail-svg" id="railSvg" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="railGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFFFFF"></stop>
+            <stop offset="0.55" stop-color="#F3F1F5"></stop>
+            <stop offset="1" stop-color="#C9C5D0"></stop>
+          </linearGradient>
+        </defs>
+        <polygon id="railTube" fill="url(#railGrad)" points="250,-55.3 1062,471.6 1065,478.9 250,-37.3"></polygon>
+      </svg>
+      <div class="floor-shadow" id="floorShadow"></div>
+      <div id="garmentLayer"></div>
+      <div class="hero-ui" id="heroUi">
+        <div class="left-index" id="leftIndex">
+          <div class="idx-num" id="idxNum">01</div>
+          <div class="idx-track"><div class="idx-fill" id="idxFill"></div></div>
+          <div>12</div>
+        </div>
+        <div class="info-col" id="infoCol">
+          <div class="info-counter"><span class="reveal-mask"><span class="reveal-line swap" id="infoCounter">01 / 12</span></span></div>
+          <h1 class="info-title">
+            <span class="reveal-mask"><span class="reveal-line swap" id="titleLine1">Gaun</span></span>
+            <span class="reveal-mask"><span class="reveal-line swap" id="titleLine2">Smock</span></span>
+          </h1>
+          <div class="info-rule"></div>
+          <p class="info-desc">
+            <span class="reveal-mask"><span class="reveal-line swap" id="descLine1">Katun sikat lembut dengan smock</span></span>
+            <span class="reveal-mask"><span class="reveal-line swap" id="descLine2">jahit tangan. Untuk bermain dan tidur siang.</span></span>
+          </p>
+          <div class="info-specs">
+            <div class="spec-row"><span class="reveal-mask"><span class="reveal-line"><span class="spec-label">Bahan</span><span class="spec-value swap" id="specMaterial">Katun Organik</span></span></span></div>
+            <div class="spec-row"><span class="reveal-mask"><span class="reveal-line"><span class="spec-label">Warna</span><span class="spec-value swap" id="specColour">Periwinkle / Blush / Awan</span></span></span></div>
+            <div class="spec-row"><span class="reveal-mask"><span class="reveal-line"><span class="spec-label">Ukuran</span><span class="spec-value swap" id="specSize">2Y / 4Y / 6Y</span></span></span></div>
+          </div>
+          <button class="detail-btn" id="detailBtn">Lihat Detail
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 9 L9 1 M3.5 1 H9 V6.5" stroke="#32333F" stroke-width="1"></path></svg>
+          </button>
+        </div>
+        <div class="pager" id="pager">
+          <button id="pagerPrev" aria-label="Sebelumnya">
+            <svg width="36" height="12" viewBox="0 0 36 12" fill="none" opacity="0.55"><path d="M36 6 H2 M7 1 L2 6 L7 11" stroke="#32333F" stroke-width="1"></path></svg>
+          </button>
+          <span class="pager-count swap" id="pagerCount">01 / 12</span>
+          <button id="pagerNext" aria-label="Berikutnya">
+            <svg width="36" height="12" viewBox="0 0 36 12" fill="none" opacity="0.55"><path d="M0 6 H34 M29 1 L34 6 L29 11" stroke="#32333F" stroke-width="1"></path></svg>
+          </button>
+        </div>
+        <div class="hero-footer">HINA · Little Wardrobe | 07</div>
+        <div class="hero-hint">
+          <span>Klik untuk intip</span>
+          <svg width="20" height="10" viewBox="0 0 20 10" fill="none"><path d="M1 5 H19 M4 2 L1 5 L4 8 M16 2 L19 5 L16 8" stroke="#6A6B80" stroke-width="1"></path></svg>
+          <span>Klik lagi untuk ikuti</span>
+        </div>
+      </div>
+      <div class="detail-panel" id="detailPanel">
+        <button class="panel-close" id="panelClose">Kembali ke Koleksi
+          <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1 1 L8 8 M8 1 L1 8" stroke="#32333F" stroke-width="1"></path></svg>
+        </button>
+        <div class="panel-meta"><span id="panelTabName">Di Gantungan</span><span id="panelTabCount">01 / 03</span></div>
+        <div class="panel-tabs" id="panelTabs">
+          <button data-ptab="1" class="active">01 / Di Gantungan</button>
+          <button data-ptab="2">02 / Kain</button>
+          <button data-ptab="3">03 / Detail</button>
+        </div>
+        <div class="panel-box" id="panelBox">
+          <div class="panel-layer" data-player="1"><div class="panel-crop"></div></div>
+          <div class="panel-layer" data-player="2"><div class="panel-crop"></div></div>
+          <div class="panel-layer" data-player="3"><div class="panel-crop"></div></div>
+        </div>
+        <p class="panel-caption" id="panelCaption">Digantung pada gantungan kayu kecil.</p>
+        <div class="panel-track"><div class="panel-thumb" id="panelThumb" style="top:0"></div></div>
+      </div>
+    </div>
+  </div>
+  <nav class="hero-nav" id="heroNav">
+    <a class="hero-wordmark" href="index.html">HINA</a>
+    <div class="hero-nav-center">
+      <a href="koleksi.html" class="active">Pakaian</a>
+      <span>Aksesori</span>
+      <span>Jurnal</span>
+      <span>Tentang</span>
+    </div>
+    <div class="hero-nav-right">
+      <span class="hero-search-label">Cari</span>
+      <span class="hero-menu-label">Menu</span>
+      <span class="hero-burger"><i></i><i></i><i></i></span>
+    </div>
+  </nav>
+</section>
+<div class="below-stage" id="belowStage"></div>
+
+<main>
+  <section class="section">
+    <div class="wrap split">
+      <div>
+        <span class="kicker" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)">Selamat datang di HINA</span>
+        <h2 style="margin-top:14px">Pakaian anak yang lembut, dibuat perlahan</h2>
+        <p>HINA adalah lemari kecil berisi dua belas potong pakaian anak — gaun, blus, pinafore, dan rompi — dari katun, linen, dan rajut yang lembut di kulit. Setiap potong digantung, dipilih, dan dijahit dengan tenang.</p>
+        <div class="stats-row">
+          <div><strong>12</strong><span>Potong pilihan</span></div>
+          <div><strong>4</strong><span>Bahan alami</span></div>
+          <div><strong>1Y–6Y</strong><span>Rentang ukuran</span></div>
+        </div>
+        <a class="btn" href="koleksi.html">Belanja Sekarang</a>
+      </div>
+      <div class="split-panel" id="introPanel" style="background-color:#DCD2DE"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Pilihan kami</span>
+        <h2>Produk Unggulan</h2>
+        <p>Empat potong yang paling disukai dari rel HINA musim ini.</p>
+      </div>
+      <div class="product-grid" id="featuredGrid"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="promo-band">
+        <h2>Diskon 10% untuk pembelian pertama kamu</h2>
+        <p>Gunakan kode voucher ini saat checkout. Satu kode untuk semua potong di lemari.</p>
+        <div class="promo-code">HINA10</div>
+        <div class="promo-actions">
+          <button class="btn" id="copyVoucher">Salin Kode</button>
+          <button class="btn btn-dark" id="applyVoucherHome">Pakai Sekarang</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap split">
+      <div class="split-panel" id="aboutPanel" style="background-color:#E4D5D8"></div>
+      <div>
+        <span class="kicker" style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)">Tentang HINA</span>
+        <h2 style="margin-top:14px">Lebih dari sekadar pakaian kecil</h2>
+        <p>Kami percaya pakaian anak harus terasa seperti pelukan: ringan, bernapas, dan bebas untuk bergerak. HINA merancang setiap potong di studio kecil kami, dari sketsa sampai jahitan terakhir.</p>
+        <a class="btn" href="tentang.html">Cerita Kami</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Kenapa HINA</span>
+        <h2>Keunggulan Kami</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature"><h3>Bahan Alami</h3><p>Katun, muslin, linen, dan rajut katun yang lembut dan bernapas untuk kulit anak yang sensitif.</p></div>
+        <div class="feature"><h3>Jahitan Rapi</h3><p>Smock jahit tangan, kancing kayu, dan frill yang dijahit satu per satu agar awet dipakai lama.</p></div>
+        <div class="feature"><h3>Ukuran Jelas</h3><p>Rentang 1Y sampai 6Y dengan potongan longgar yang memberi ruang untuk tumbuh dan bermain.</p></div>
+        <div class="feature"><h3>Mudah Dirawat</h3><p>Semua potong aman dicuci dengan mesin pada putaran lembut dan cepat kering.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Kata mereka</span>
+        <h2>Testimoni</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi"><p>“Gaun smock-nya jadi favorit anakku. Bahannya adem dan smock-nya cantik sekali dilihat dari dekat.”</p><footer>Nadia — Jakarta</footer></div>
+        <div class="testi"><p>“Sudah dicuci berkali-kali tetap lembut. Ukurannya pas dan potongannya memberi ruang untuk lari-lari.”</p><footer>Bima — Bandung</footer></div>
+        <div class="testi"><p>“Pinafore linen-nya manis sekali dengan saku dalam. Kemasannya rapi, pengirimannya juga cepat.”</p><footer>Sinta — Surabaya</footer></div>
+      </div>
+      <p class="testi-note">Testimoni di atas adalah contoh untuk keperluan demo.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Surat kecil dari HINA</span>
+        <h2>Dapatkan Kabar Terbaru</h2>
+        <p>Cerita bahan baru, potong musiman, dan penawaran khusus — sesekali saja, tanpa ramai.</p>
+      </div>
+      <div class="newsletter">
+        <form id="newsletterForm">
+          <input type="email" id="newsletterEmail" placeholder="Alamat email kamu" aria-label="Alamat email">
+          <button class="btn btn-dark" type="submit">Daftar</button>
+        </form>
+        <p class="form-msg" id="newsletterMsg"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Bantuan</span>
+        <h2>Sering Ditanyakan</h2>
+      </div>
+      <div class="faq">
+        <div class="faq-item"><button>Bagaimana cara memilih ukuran?<span>+</span></button><div class="faq-a">Ukuran HINA mengikuti usia anak (1Y–6Y) dengan potongan yang longgar. Bila anakmu berada di antara dua ukuran, kami sarankan memilih satu ukuran lebih besar agar lebih lama dipakai.</div></div>
+        <div class="faq-item"><button>Apakah bahannya aman untuk kulit sensitif?<span>+</span></button><div class="faq-a">Kami memakai bahan alami seperti katun organik, muslin, dan linen yang lembut dan bernapas. Semua potong dicuci terlebih dahulu sebelum dikirim agar terasa nyaman sejak pemakaian pertama.</div></div>
+        <div class="faq-item"><button>Bagaimana cara merawatnya?<span>+</span></button><div class="faq-a">Cuci dengan mesin pada putaran lembut dan air dingin, lalu jemur di tempat teduh. Hindari pemutih agar warna pastelnya tetap awet.</div></div>
+        <div class="faq-item"><button>Berapa lama pengirimannya?<span>+</span></button><div class="faq-a">Pesanan diproses dalam 1–2 hari kerja. Pengiriman reguler membutuhkan 2–5 hari kerja tergantung kota tujuan. (Simulasi untuk demo.)</div></div>
+        <div class="faq-item"><button>Bisakah menukar ukuran?<span>+</span></button><div class="faq-a">Bisa. Penukaran ukuran diterima dalam 14 hari selama potong belum dicuci dan label masih terpasang. Hubungi kami lewat halaman Kontak.</div></div>
+        <div class="faq-item"><button>Apakah pembayaran di situs ini nyata?<span>+</span></button><div class="faq-a">Tidak. Situs ini adalah demo — checkout, voucher, dan akun bersifat simulasi di peramban kamu dan tidak memproses pembayaran sungguhan.</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer" id="siteFooter"></footer>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/components.js"></script>
+<script src="js/app.js"></script>
+<script>
+/* ============ HERO HINA — rel pakaian interaktif (inline) ============ */
+(function () {
+  "use strict";
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var HOVERABLE = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  function px(url, w) {
+    return "https://images.higgs.ai/?default=1&output=webp&url=" + encodeURIComponent(url) + "&w=" + w + "&q=85";
+  }
+  var BASE = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/";
+  var SHEET = px(BASE + "hf_20261113_121624_09fa35c4-680e-46a5-b6a9-8acd429bce67.png", 3312);
+  var SMOCK = px(BASE + "hf_20261113_121448_68442996-20c3-4f65-8f3d-56d2b6df8152.png", 2048);
+  var FABRIC = px(BASE + "hf_20261113_132947_dc18692c-66e4-447b-a11e-167b3bcadefb.png", 3312);
+  var DETAIL = px(BASE + "hf_20261113_132948_27322be0-e8d1-436a-a229-09ef6371cb98.png", 3312);
+
+  var PIECES = [
+    { b: [120, 54, 560, 742, 404], t: ["Gaun", "Smock"], d: ["Katun sikat lembut dengan smock", "jahit tangan. Untuk bermain dan tidur siang."], m: "Katun Organik", c: "Periwinkle / Blush / Awan", s: "2Y / 4Y / 6Y" },
+    { b: [982, 56, 508, 708, 1244], t: ["Gaun", "Muslin"], d: ["Kasa ganda ringan dengan lengan", "flutter kecil untuk hari yang hangat."], m: "Katun Muslin", c: "Putih Awan", s: "2Y / 4Y / 6Y" },
+    { b: [1792, 62, 558, 588, 2067], t: ["Kardigan", "Pointelle"], d: ["Rajut pointelle halus dengan kancing", "kayu. Ringan dan mudah dipadukan."], m: "Rajut Katun", c: "Blush", s: "1Y / 2Y / 4Y" },
+    { b: [2638, 54, 514, 726, 2893], t: ["Gaun", "Dungaree"], d: ["Denim lembut washed dengan rok", "mengembang dan tali yang bisa diatur."], m: "Denim Katun", c: "Periwinkle Pudar", s: "2Y / 4Y / 6Y" },
+    { b: [110, 865, 596, 652, 406], t: ["Blus", "Ruffle"], d: ["Katun crinkle dengan kerah ruffle", "lebar dan lengan puff yang manis."], m: "Katun Crinkle", c: "Abu Lilac", s: "2Y / 4Y / 6Y" },
+    { b: [938, 869, 610, 650, 1234], t: ["Smock", "Broderie"], d: ["Broderie anglaise dengan bahu", "frill dan potongan yang longgar."], m: "Katun Broderie", c: "Putih Awan", s: "2Y / 4Y / 6Y" },
+    { b: [1844, 855, 456, 718, 2067], t: ["Pinafore", "Linen"], d: ["Linen washed dengan tali kancing", "dan dua saku tempel yang dalam."], m: "Linen 100%", c: "Blush", s: "2Y / 4Y / 6Y" },
+    { b: [2614, 861, 570, 630, 2895], t: ["Jumper", "Rajut"], d: ["Rajut katun open-stitch dengan", "leher bulat yang lembut dan mudah."], m: "Rajut Katun", c: "Periwinkle", s: "1Y / 2Y / 4Y" },
+    { b: [112, 1661, 592, 712, 407], t: ["Gaun", "Frill"], d: ["Katun pintuck dengan bahu frill", "dan manset elastis yang nyaman."], m: "Katun Organik", c: "Putih Awan", s: "2Y / 4Y / 6Y" },
+    { b: [996, 1661, 492, 716, 1237], t: ["Pinafore", "Saku"], d: ["Twill lembut dengan tali frill dan", "saku untuk harta karun kecil."], m: "Katun Twill", c: "Abu Lilac", s: "2Y / 4Y / 6Y" },
+    { b: [1832, 1663, 478, 714, 2067], t: ["Gaun", "Gingham"], d: ["Gingham bersmock dengan lengan", "puff pendek untuk hari yang cerah."], m: "Katun Gingham", c: "Blush / Krem", s: "2Y / 4Y / 6Y" },
+    { b: [2682, 1673, 434, 630, 2894], t: ["Rompi", "Quilt"], d: ["Quilt ringan dengan kancing kayu.", "Hangat, tidak pernah terasa berat."], m: "Katun Quilt", c: "Periwinkle Pucat", s: "1Y / 2Y / 4Y" }
+  ];
+  var SLOT_X = [352, 440, 505, 565, 620, 670, 716, 758, 796, 831, 863, 893];
+  var SCALE_PTS = [[352, 0.94], [435, 0.905], [545, 0.83], [670, 0.70], [778, 0.57], [878, 0.445], [958, 0.33], [1045, 0.19]];
+  var FAB_COLS = [[0, 805], [836, 1638], [1668, 2476], [2506, 3311]];
+  var FAB_ROWS = [[0, 803], [834, 1633], [1664, 2479]];
+  var DET_COLS = [[0, 811], [842, 1640], [1671, 2470], [2501, 3311]];
+  var DET_ROWS = [[0, 804], [835, 1635], [1668, 2479]];
+  var TAB_NAMES = { 1: "Di Gantungan", 2: "Kain", 3: "Detail" };
+  var CAPTIONS = {
+    1: "Digantung pada gantungan kayu kecil.",
+    2: "Lembut disentuh, dicuci agar nyaman.",
+    3: "Sentuhan kecil, dijahit agar awet."
+  };
+
+  var frame = document.getElementById("heroFrame");
+  var stage = document.getElementById("heroStage");
+  var heroSection = document.getElementById("heroSection");
+  var layer = document.getElementById("garmentLayer");
+  var shadow = document.getElementById("floorShadow");
+  var els = PIECES.map(function (p, i) {
+    var el = document.createElement("div");
+    el.className = "garment";
+    el.style.width = p.b[2] + "px";
+    el.style.height = p.b[3] + "px";
+    el.style.backgroundImage = "url('" + SHEET + "')";
+    el.style.backgroundSize = "3312px 2480px";
+    el.style.backgroundPosition = (-p.b[0]) + "px " + (-p.b[1]) + "px";
+    el.style.transformOrigin = (p.b[4] - p.b[0]) + "px 0px";
+    layer.appendChild(el);
+    return { data: p, el: el, slotOverride: null, opacity: null, z: null };
+  });
+
+  var cur = 0, hoverSlot = null, detailOpen = false, panelTab = 1;
+  var scale = 1, phone = false, lastStep = 0, pendingTimer = null;
+  var EASE = "cubic-bezier(.2,.75,.2,1)";
+
+  function railY(x) { return 5 + 0.641 * (x - 330); }
+  function hookXForSlot(s) {
+    if (s <= 0) return 352 + s * 120;
+    if (s >= 11) return SLOT_X[11] + (s - 11) * (SLOT_X[11] - SLOT_X[10]);
+    var i = Math.floor(s), f = s - i;
+    return SLOT_X[i] + (SLOT_X[i + 1] - SLOT_X[i]) * f;
+  }
+  function scaleForX(x) {
+    var P = SCALE_PTS, n = P.length, i, m;
+    if (x <= P[0][0]) { m = (P[1][1] - P[0][1]) / (P[1][0] - P[0][0]); return P[0][1] + (x - P[0][0]) * m; }
+    for (i = 0; i < n - 1; i++) {
+      if (x <= P[i + 1][0]) { m = (P[i + 1][1] - P[i][1]) / (P[i + 1][0] - P[i][0]); return P[i][1] + (x - P[i][0]) * m; }
+    }
+    m = (P[n - 1][1] - P[n - 2][1]) / (P[n - 1][0] - P[n - 2][0]);
+    return P[n - 1][1] + (x - P[n - 1][0]) * m;
+  }
+  function slotOf(i) { return ((i - cur) % 12 + 12) % 12; }
+
+  function layout() {
+    els.forEach(function (p, i) {
+      var slot = p.slotOverride != null ? p.slotOverride : slotOf(i);
+      var X = hookXForSlot(slot);
+      var S = slot === 0 ? 0.93 : scaleForX(X);
+      var dx = 0, dy = 0, rot = 0, op = p.opacity != null ? p.opacity : 1, filter = "";
+      if (detailOpen && slot !== 0 && p.slotOverride == null) {
+        X = 352 + (X - 352) * 0.36;
+        S = scaleForX(X);
+        op = 0.62;
+        filter = "blur(7px) saturate(.55) brightness(1.04)";
+      }
+      var scaleFinal = S;
+      if (hoverSlot != null && !detailOpen && p.slotOverride == null) {
+        if (slot === hoverSlot) { dx = 38 * S; dy = 6; rot = -6; scaleFinal = S * 1.035; }
+        else if (slot > hoverSlot) { dx = 18 * S; }
+      }
+      var ox = p.data.b[4] - p.data.b[0];
+      p.el.style.transform = "translate(" + (X - ox + dx) + "px," + (railY(X) - 9 * S + dy) + "px) rotate(" + rot + "deg) scale(" + scaleFinal + ")";
+      p.el.style.zIndex = p.z != null ? p.z : Math.round(100 - slot);
+      p.el.style.opacity = op;
+      p.el.style.filter = filter;
+    });
+    shadow.style.top = (railY(352) + PIECES[cur].b[3] * 0.93 - 26) + "px";
+  }
+
+  /* ---------- Teks ---------- */
+  var swapEls = ["infoCounter", "titleLine1", "titleLine2", "descLine1", "descLine2",
+    "specMaterial", "specColour", "specSize", "pagerCount"].map(function (id) { return document.getElementById(id); });
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function fillTexts() {
+    var p = PIECES[cur], label = pad(cur + 1) + " / 12";
+    document.getElementById("infoCounter").textContent = label;
+    document.getElementById("pagerCount").textContent = label;
+    document.getElementById("titleLine1").textContent = p.t[0];
+    document.getElementById("titleLine2").textContent = p.t[1];
+    document.getElementById("descLine1").textContent = p.d[0];
+    document.getElementById("descLine2").textContent = p.d[1];
+    document.getElementById("specMaterial").textContent = p.m;
+    document.getElementById("specColour").textContent = p.c;
+    document.getElementById("specSize").textContent = p.s;
+    document.getElementById("idxNum").textContent = pad(cur + 1);
+    document.getElementById("idxFill").style.transform = "scaleY(" + ((cur + 1) / 12) + ")";
+  }
+  function swapTexts() {
+    swapEls.forEach(function (el) { el.classList.add("swap-out"); });
+    setTimeout(function () {
+      fillTexts();
+      swapEls.forEach(function (el) { el.classList.remove("swap-out"); });
+      if (detailOpen) refreshPanel();
+    }, REDUCED ? 0 : 140);
+  }
+
+  /* ---------- Langkah rel ---------- */
+  function doStepNext() {
+    lastStep = performance.now();
+    hoverSlot = null;
+    var exit = els[cur];
+    exit.slotOverride = -1.3;
+    exit.opacity = 0;
+    cur = (cur + 1) % 12;
+    layout();
+    swapTexts();
+    setTimeout(function () {
+      exit.el.classList.add("notrans");
+      exit.slotOverride = null;
+      layout();
+      void exit.el.offsetWidth;
+      exit.el.classList.remove("notrans");
+      exit.opacity = null;
+      requestAnimationFrame(function () { layout(); });
+    }, REDUCED ? 30 : 360);
+  }
+  function doStepPrev() {
+    lastStep = performance.now();
+    hoverSlot = null;
+    var incoming = els[(cur + 11) % 12];
+    incoming.el.classList.add("notrans");
+    incoming.slotOverride = -1.3;
+    incoming.opacity = 0;
+    incoming.z = 200;
+    layout();
+    void incoming.el.offsetWidth;
+    incoming.el.classList.remove("notrans");
+    cur = (cur + 11) % 12;
+    incoming.slotOverride = null;
+    incoming.opacity = null;
+    incoming.z = null;
+    layout();
+    swapTexts();
+  }
+  function stepThrottled(dir) {
+    var wait = 95 - (performance.now() - lastStep);
+    if (wait <= 0) { dir > 0 ? doStepNext() : doStepPrev(); return; }
+    if (pendingTimer) return;
+    pendingTimer = setTimeout(function () {
+      pendingTimer = null;
+      dir > 0 ? doStepNext() : doStepPrev();
+    }, wait);
+  }
+  function followPiece(slot) {
+    hoverSlot = slot;
+    layout();
+    for (var k = 0; k < slot; k++) {
+      (function () { setTimeout(doStepNext, 260 + k * 120); })();
+    }
+  }
+
+  /* ---------- Hitung titik pointer ---------- */
+  function framePoint(e) {
+    var r = frame.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale };
+  }
+  function spanOf(i) {
+    var slot = slotOf(i), X = hookXForSlot(slot);
+    var S = slot === 0 ? 0.93 : scaleForX(X);
+    var b = PIECES[i].b, ox = b[4] - b[0];
+    var top = railY(X) - 9 * S;
+    return { slot: slot, left: X - ox * S, right: X + (b[2] - ox) * S, top: top, bottom: top + b[3] * S };
+  }
+  function hitTest(pt) {
+    var front = spanOf(cur);
+    if (pt.x > front.left + 30 && pt.x < front.right - 20 && pt.y > front.top + 60 && pt.y < front.bottom) {
+      return { type: "front" };
+    }
+    for (var s = 1; s <= 11; s++) {
+      var i = (cur + s) % 12, sp = spanOf(i);
+      if (sp.right - 6 >= pt.x) {
+        if (pt.y > sp.top + 40 && pt.y < sp.bottom - 10 && pt.x > front.right - 20) {
+          return { type: "rail", slot: s, index: i };
+        }
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /* ---------- Panel detail ---------- */
+  var panelBox = document.getElementById("panelBox");
+  function coverCrop(url, W, H, rx, ry, rw, rh, bw, bh) {
+    var s = Math.max(bw / rw, bh / rh);
+    return {
+      w: bw, h: bh, left: 0, top: 0,
+      bg: "url('" + url + "')",
+      size: (W * s) + "px " + (H * s) + "px",
+      pos: ((bw - rw * s) / 2 - rx * s) + "px " + ((bh - rh * s) / 2 - ry * s) + "px"
+    };
+  }
+  function layerCrop(tab) {
+    var bw = panelBox.clientWidth || 270, bh = panelBox.clientHeight || 470;
+    var idx = cur, b = PIECES[idx].b;
+    if (tab === 1) {
+      if (idx === 0) {
+        var s = bw / 990, h = 1007 * s;
+        return { w: bw, h: h, left: 0, top: (bh - h) / 2, bg: "url('" + SMOCK + "')", size: (2048 * s) + "px " + (2048 * s) + "px", pos: "0px 0px" };
+      }
+      var sc = Math.min(0.9 * bw / b[2], 0.88 * bh / b[3]);
+      return {
+        w: b[2] * sc, h: b[3] * sc, left: (bw - b[2] * sc) / 2, top: (bh - b[3] * sc) / 2,
+        bg: "url('" + SHEET + "')", size: (3312 * sc) + "px " + (2480 * sc) + "px",
+        pos: (-b[0] * sc) + "px " + (-b[1] * sc) + "px"
+      };
+    }
+    if (idx === 0) {
+      var cell = tab === 2 ? [0, 1041] : [1041, 0];
+      return coverCrop(SMOCK, 2048, 2048, cell[0] + 6, cell[1] + 6, 995, 995, bw, bh);
+    }
+    var col = idx % 4, row = Math.floor(idx / 4);
+    var cols = tab === 2 ? FAB_COLS : DET_COLS, rows = tab === 2 ? FAB_ROWS : DET_ROWS;
+    return coverCrop(tab === 2 ? FABRIC : DETAIL, 3312, 2480,
+      cols[col][0] + 6, rows[row][0] + 6,
+      cols[col][1] - cols[col][0] - 12, rows[row][1] - rows[row][0] - 12, bw, bh);
+  }
+  function refreshPanel() {
+    [1, 2, 3].forEach(function (tab) {
+      var crop = layerCrop(tab);
+      var layerEl = panelBox.querySelector('[data-player="' + tab + '"]');
+      var cropEl = layerEl.querySelector(".panel-crop");
+      cropEl.style.width = crop.w + "px";
+      cropEl.style.height = crop.h + "px";
+      cropEl.style.left = crop.left + "px";
+      cropEl.style.top = crop.top + "px";
+      cropEl.style.backgroundImage = crop.bg;
+      cropEl.style.backgroundSize = crop.size;
+      cropEl.style.backgroundPosition = crop.pos;
+      layerEl.classList.toggle("active", tab === panelTab);
+    });
+    document.getElementById("panelTabName").textContent = TAB_NAMES[panelTab];
+    document.getElementById("panelTabCount").textContent = "0" + panelTab + " / 03";
+    document.getElementById("panelCaption").textContent = CAPTIONS[panelTab];
+    document.getElementById("panelThumb").style.top = ((panelTab - 1) * 200) + "px";
+    document.querySelectorAll("#panelTabs [data-ptab]").forEach(function (btn) {
+      btn.classList.toggle("active", parseInt(btn.getAttribute("data-ptab"), 10) === panelTab);
+    });
+  }
+  function setPanelTab(tab) { panelTab = tab; refreshPanel(); }
+  function setDetail(open) {
+    if (open === detailOpen) return;
+    detailOpen = open;
+    document.body.classList.toggle("detail", open);
+    frame.classList.add("slow");
+    setTimeout(function () { frame.classList.remove("slow"); }, REDUCED ? 10 : 760);
+    if (open) {
+      panelTab = 1;
+      refreshPanel();
+      if (phone) {
+        var panel = document.getElementById("detailPanel");
+        setTimeout(function () {
+          panel.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+        }, 60);
+      }
+    }
+    layout();
+  }
+
+  /* ---------- Peristiwa ---------- */
+  document.getElementById("pagerNext").addEventListener("click", function () { stepThrottled(1); });
+  document.getElementById("pagerPrev").addEventListener("click", function () { stepThrottled(-1); });
+  document.getElementById("detailBtn").addEventListener("click", function () { setDetail(true); });
+  document.getElementById("panelClose").addEventListener("click", function () { setDetail(false); });
+  document.getElementById("panelTabs").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-ptab]");
+    if (btn) setPanelTab(parseInt(btn.getAttribute("data-ptab"), 10));
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea, select")) return;
+    if (e.key === "Escape") { setDetail(false); return; }
+    var r = heroSection.getBoundingClientRect();
+    var heroActive = r.bottom > window.innerHeight * 0.5;
+    if (!heroActive) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); stepThrottled(1); }
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); stepThrottled(-1); }
+  });
+
+  var wheelAcc = 0;
+  stage.addEventListener("wheel", function (e) {
+    if (phone) return;
+    var r = heroSection.getBoundingClientRect();
+    if (!(r.top <= 0 && r.bottom >= window.innerHeight * 0.75)) return;
+    var d = e.deltaY + e.deltaX;
+    if (d > 0 && cur === 11) return;
+    if (d < 0 && cur === 0) return;
+    e.preventDefault();
+    wheelAcc += d;
+    while (Math.abs(wheelAcc) >= 40) {
+      stepThrottled(wheelAcc > 0 ? 1 : -1);
+      wheelAcc += wheelAcc > 0 ? -40 : 40;
+    }
+  }, { passive: false });
+
+  if (HOVERABLE) {
+    stage.addEventListener("mousemove", function (e) {
+      if (detailOpen || phone) return;
+      var hit = hitTest(framePoint(e));
+      var slot = hit && hit.type === "rail" ? hit.slot : null;
+      stage.style.cursor = hit ? "pointer" : "";
+      if (slot !== hoverSlot) { hoverSlot = slot; layout(); }
+    });
+    stage.addEventListener("mouseleave", function () {
+      if (hoverSlot !== null) { hoverSlot = null; layout(); }
+      stage.style.cursor = "";
+    });
+  }
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest("button, a, .hero-ui")) return;
+    var hit = hitTest(framePoint(e));
+    if (!hit) return;
+    if (hit.type === "front") setDetail(!detailOpen);
+    else if (!detailOpen && hit.type === "rail") followPiece(hit.slot);
+  });
+
+  var touchX = null, touchY = null;
+  stage.addEventListener("touchstart", function (e) {
+    var t = e.changedTouches[0];
+    touchX = t.clientX; touchY = t.clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (touchX == null) return;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - touchX, dy = t.clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) {
+      stepThrottled(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+
+  /* ---------- Tata letak bingkai & blok telepon ---------- */
+  var infoCol = document.getElementById("infoCol");
+  var pager = document.getElementById("pager");
+  var panel = document.getElementById("detailPanel");
+  var heroUi = document.getElementById("heroUi");
+  var belowStage = document.getElementById("belowStage");
+  var inPhone = false;
+  function moveBlocks() {
+    if (phone && !inPhone) {
+      belowStage.appendChild(infoCol);
+      belowStage.appendChild(pager);
+      belowStage.appendChild(panel);
+      inPhone = true;
+    } else if (!phone && inPhone) {
+      heroUi.appendChild(infoCol);
+      heroUi.appendChild(pager);
+      frame.appendChild(panel);
+      inPhone = false;
+    }
+  }
+  function fit() {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    document.documentElement.style.setProperty("--ns", Math.max(0.62, Math.min(1, vw / 1440)));
+    phone = vw <= 820;
+    if (!phone) {
+      scale = Math.min(Math.max(vw / 1440, vh / 900), vh / 870, vw / 1380);
+      frame.style.transform = "translate(" + (-720 * scale) + "px," + (-450 * scale) + "px) scale(" + scale + ")";
+    } else {
+      var sh = stage.clientHeight || Math.round(vh * 0.64);
+      scale = sh / 780;
+      var x = Math.min(0, Math.max(vw - 1100 * scale, (vw - 760 * scale) / 2 - 40 * scale));
+      var y = -sh / 2 - 20 * scale;
+      frame.style.transform = "translate(" + x + "px," + y + "px) scale(" + scale + ")";
+    }
+    moveBlocks();
+    if (detailOpen) refreshPanel();
+  }
+  window.addEventListener("resize", fit);
+
+  /* ---------- Animasi pembuka ---------- */
+  function entrance() {
+    if (REDUCED || !document.documentElement.classList.contains("pre")) return;
+    document.documentElement.classList.remove("pre");
+    var tube = document.getElementById("railSvg");
+    tube.animate([
+      { opacity: 0, clipPath: "inset(0 100% 0 0)" },
+      { opacity: 1, clipPath: "inset(0 0% 0 0)" }
+    ], { duration: 1000, delay: 100, fill: "backwards", easing: EASE });
+    document.getElementById("heroNav").animate([
+      { opacity: 0 }, { opacity: 1 }
+    ], { duration: 900, delay: 200, fill: "backwards", easing: EASE });
+    els.forEach(function (p) {
+      var slot = slotOf(PIECES.indexOf(p.data));
+      p.el.animate([
+        { opacity: 0, translate: "0 -14px" },
+        { opacity: 1, translate: "0 0" }
+      ], { duration: 900, delay: 250 + slot * 35, fill: "backwards", easing: EASE });
+    });
+    document.querySelectorAll(".reveal-line").forEach(function (line, i) {
+      line.animate([
+        { transform: "translateY(105%)", opacity: 0 },
+        { transform: "translateY(0)", opacity: 1 }
+      ], { duration: 1000, delay: 650 + i * 70, fill: "backwards", easing: EASE });
+    });
+    ["leftIndex", "infoCol", "pager", "heroFooterEl", "heroHintEl"].forEach(function () {});
+    var fades = [document.getElementById("leftIndex"),
+      document.querySelector(".info-rule"),
+      document.getElementById("detailBtn"),
+      document.getElementById("pager"),
+      document.querySelector(".hero-footer"),
+      document.querySelector(".hero-hint")];
+    fades.forEach(function (el, i) {
+      if (!el) return;
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: 900 + i * 70, fill: "backwards", easing: EASE });
+    });
+  }
+
+  fit();
+  layout();
+  fillTexts();
+  document.getElementById("idxFill").style.transform = "scaleY(" + (1 / 12) + ")";
+  if (document.readyState === "complete") entrance();
+  else window.addEventListener("load", entrance);
+
+  /* Pegangan uji */
+  window.__hina = {
+    next: doStepNext, prev: doStepPrev,
+    openDetail: function () { setDetail(true); },
+    closeDetail: function () { setDetail(false); },
+    setTab: setPanelTab,
+    state: function () { return { cur: cur, detail: detailOpen, tab: panelTab, garments: els.length }; }
+  };
+})();
+
+/* Panel pengantar & tentang di beranda memakai crop dari data pusat. */
+document.addEventListener("DOMContentLoaded", function () {
+  var intro = document.getElementById("introPanel");
+  if (intro && typeof spriteStyle === "function") {
+    intro.innerHTML =
+      '<span class="panel-bottle" style="' + spriteStyle(1) + '"></span>' +
+      '<span class="panel-fruit" style="' + fabricStyle(2) + ';right:6%;top:8%"></span>' +
+      '<span class="panel-fruit" style="' + fabricStyle(11) + ';left:5%;bottom:6%"></span>';
+  }
+  var about = document.getElementById("aboutPanel");
+  if (about && typeof spriteStyle === "function") {
+    about.innerHTML =
+      '<span class="panel-bottle" style="' + spriteStyle(11) + '"></span>' +
+      '<span class="panel-fruit" style="' + detailStyle(11) + ';left:6%;top:10%"></span>' +
+      '<span class="panel-fruit" style="' + fabricStyle(4) + ';right:5%;bottom:8%"></span>';
+  }
+});
+</script>
+</body>
+</html>

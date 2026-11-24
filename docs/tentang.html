@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tentang — HINA Lemari Kecil</title>
+<meta name="description" content="Cerita HINA: studio kecil yang merancang pakaian anak lembut dari bahan alami.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="tentang">
+<header class="site-header" id="siteHeader"></header>
+<main>
+  <div class="page-head wrap">
+    <h1>Tentang HINA</h1>
+    <p>Lemari kecil, dibuat perlahan.</p>
+  </div>
+  <section class="wrap" style="padding-bottom:40px">
+    <div class="split">
+      <div>
+        <h2>Pakaian anak yang terasa seperti pelukan</h2>
+        <p>HINA berawal dari satu rel pakaian di studio kecil kami. Kami menggantung setiap potong, memandangnya lama, lalu memutuskan bahan dan jahitan yang paling lembut untuk kulit anak.</p>
+        <p>Koleksi kami kecil dengan sengaja — dua belas potong yang benar-benar kami sukai: gaun smock jahit tangan, pinafore linen dengan saku dalam, kardigan pointelle berkancing kayu, dan rompi quilt yang hangat tanpa terasa berat.</p>
+      </div>
+      <div class="split-panel" id="tentangPanel" style="background-color:#DCD2DE"></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><span class="kicker">Cara kami bekerja</span><h2>Nilai HINA</h2></div>
+      <div class="features-grid">
+        <div class="feature"><h3>Perlahan</h3><p>Setiap potong dirancang dan dijahit tanpa terburu-buru, dalam jumlah kecil setiap musimnya.</p></div>
+        <div class="feature"><h3>Lembut Dulu</h3><p>Bahan alami yang bernapas selalu didahulukan — katun, muslin, linen, dan rajut katun.</p></div>
+        <div class="feature"><h3>Tumbuh Bersama</h3><p>Potongan longgar dan tali yang bisa diatur membuat satu potong menemani anak lebih lama.</p></div>
+        <div class="feature"><h3>Jujur</h3><p>Komposisi bahan ditulis apa adanya pada setiap produk, tanpa klaim berlebihan.</p></div>
+      </div>
+      <div style="text-align:center;margin-top:44px"><a class="btn btn-dark" href="koleksi.html">Lihat Koleksi</a></div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer" id="siteFooter"></footer>
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/components.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var p = document.getElementById("tentangPanel");
+  if (p) p.innerHTML = '<span class="panel-bottle" style="' + spriteStyle(7) + '"></span>' +
+    '<span class="panel-fruit" style="' + fabricStyle(7) + ';right:6%;top:8%"></span>';
+});
+</script>
+</body>
+</html>
